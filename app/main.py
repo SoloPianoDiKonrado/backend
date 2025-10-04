@@ -28,10 +28,11 @@ class ChatResponse(BaseModel):
 
 class GameInterface(BaseModel):
     money: int
-    health: int  # 0–200
+    health: int  # 0–100
     relations: int
     satisfaction: int
     passive_income: int
+    married: bool
 
     age: Optional[int] = None
     job: Optional[str] = None
@@ -125,10 +126,9 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
             "currency": "<one of: money, health, relations, satisfaction>",
             "is_work_related": <boolean>,
             "results": [
-            {"currency": "<money|health|relations|satisfaction>", "amount": <int (może być ujemny)>},
+            {"currency": "<money|health|relations|satisfaction|passive_income>", "amount": <int (może być ujemny)>},
             ...
             ]
-        },
         ...
         ]
     }
@@ -143,8 +143,10 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     5. Nie dodawaj żadnych dodatkowych kluczy (np. "explanation", "probability", "meta") — tylko powyższe pola.
     6. Wszystkie wartości muszą być spójne semantycznie z przekazanym stanem gry.
 
+    W pewnym momencie mozesz zaproponowac opcje zeby wziac ślub - tylko jeśli user ma married=false
+    
     Reguły tworzenia sensownych i edukacyjnych opcji (heurystyki):
-    1. Bierz pod uwagę wszystkie pola `game_interface`: age, money, health (0-200), relations, satisfaction, passive_income, job, education. Generuj opcje adekwatne do wieku (np. osoby 18–30: studia, start kariery, ryzyko zadłużenia; 45–60: zmiana pracy, ubezpieczenia, inwestycje; >=65: jeśli bywa wywoływane, zwróć pustą listę).
+    1. Bierz pod uwagę wszystkie pola `game_interface`: age, money, health (0-100), relations, satisfaction, passive_income, job, education, married. Generuj opcje adekwatne do wieku (np. osoby 18–30: studia, start kariery, ryzyko zadłużenia; 45–60: zmiana pracy, ubezpieczenia, inwestycje; >=65: jeśli bywa wywoływane, zwróć pustą listę).
     2. Zadbaj o realność wpływów:
     - Opcje edukacyjne: zwykle niska natychmiastowa `price` (opłata kursu) i spadek `money`, wzrost `satisfaction`/`relations` drobny, długoterminowy wzrost `money` i `passive_income` w `results`.
     - Opcje zawodowe: "zmiana pracy" może mieć neutralny/ujemny `price` (koszty przejścia) i znaczący wzrost `money` / `satisfaction` lub ryzyko spadku `relations`.
@@ -199,6 +201,8 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
         }
     ]
     }
+
+    Niech twoje propozycje options mają sens - jeśli gracz ma tytuł inyniera to nie proponuj mu robienia licencjatu bo na chuj???
 
     Dodatkowe wskazówki implementacyjne:
     - Staraj się tworzyć nazwy opcji zróżnicowane stylistycznie i krótkie.
