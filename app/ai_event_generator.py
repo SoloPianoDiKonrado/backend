@@ -6,7 +6,6 @@ from typing import Dict, Any
 class AIEventGenerator:
     def __init__(self):
         self.gemini = GeminiChat()
-        self.gemini.start_chat()
 
     def generate_event_description(self, event: GameEvent, game_state: GameInterface) -> str:
         """
@@ -22,8 +21,8 @@ class AIEventGenerator:
         
         Aktualny stan gry:
         - Zdrowie: {game_state.health}
-        - Finanse: {game_state.finances}
-        - Relacje: {game_state.relationships}
+        - Finanse: {game_state.money}
+        - Relacje: {game_state.relations}
         - Dochód pasywny: {game_state.passive_income}
         - Satysfakcja: {game_state.satisfaction}
         
@@ -122,7 +121,7 @@ class AIEventGenerator:
             "description": "An AI-generated event",
             "type": "positive",
             "conditions": {},
-            "effects": {"health": 0, "finances": 0, "relationships": 0, "passive_income": 0, "satisfaction": 0},
+            "effects": {"health": 0, "money": 0, "relations": 0, "passive_income": 0, "satisfaction": 0},
             "chance": 0.1
         }
 
