@@ -57,6 +57,7 @@ class GameOption(BaseModel):
     price: int
     currency: Currency
     results: list[CurrencyChange]
+    is_work_related: bool
 
 class GenerateYearResponse(BaseModel):
     options: list[GameOption]
@@ -112,6 +113,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
             "name": "<string, krótka nazwa opcji>",
             "price": <int, całkowita wartość >= 0>,
             "currency": "<one of: money, health, relations, satisfaction>",
+            "is_work_related": <boolean>,
             "results": [
             {"currency": "<money|health|relations|satisfaction>", "amount": <int (może być ujemny)>},
             ...
@@ -125,6 +127,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - `name`: max ~40 znaków, czytelna i krótka (np. "Kontynuuj studia", "Zmiana pracy", "Zainwestuj w niszowy kurs").
     - `price`: natychmiastowy koszt w jednostce wskazanej przez `currency`. Zawsze liczba całkowita >= 0.
     - `currency`: określa **walutę, z której zapłaci gracz natychmiast** (jedna z czterech).
+    - `is_work_related`: ustaw na `true`, jeśli opcja bezpośrednio dotyczy podjęcia nowej pracy, zmiany pracy, awansu lub założenia działalności gospodarczej (czyli sytuacji, które będą wymagały ustalenia szczegółów umowy i składek ZUS). W przeciwnym razie ustaw na `false` (np. dla edukacji, inwestycji, hobby).
     - `results`: lista skutków w postaci zmian walut (mogą być dodatnie lub ujemne). Każdy obiekt ma `currency` i `amount` (int). `amount` odzwierciedla efekt po pięciu latach (sumaryczna zmiana w danej walucie).
     - Dopuszczalna długość listy `results`: 1–3 wpisów (najczęściej 1–2). MAX 3 POWINNO BYC RZADKO AZ TYLE
     5. Nie dodawaj żadnych dodatkowych kluczy (np. "explanation", "probability", "meta") — tylko powyższe pola.
@@ -164,6 +167,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
         "name":"Kontynuuj studia (magister)",
         "price":5000,
         "currency":"money",
+        "is_work_related": false,
         "results":[
             {"currency":"money","amount":15000},
             {"currency":"passive_income","amount":200}
@@ -173,6 +177,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
         "name":"Praca dorywcza + kurs IT",
         "price":0,
         "currency":"money",
+        "is_work_related": true,
         "results":[
             {"currency":"money","amount":6000},
             {"currency":"health","amount":-5},
