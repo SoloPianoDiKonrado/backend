@@ -1,0 +1,93 @@
+[
+    {
+      "name": "Heart Attack",
+      "type": "negative",
+      "description": "Twoje zdrowie jest krytycznie niskie, ryzyko zawału wzrasta.",
+      "conditions": {
+        "health": {"max": 40}
+      },
+      "effects": {
+        "money": -10,
+        "health": -30,
+        "relations": 0,
+        "passive_income": 0,
+        "satisfaction": -20
+      },
+      "chance": 0.1
+    },
+    {
+      "name": "Job Loss",
+      "type": "negative",
+      "description": "Nieoczekiwana utrata pracy i dochodu.",
+      "conditions": {},
+      "effects": {
+        "money": -25,
+        "health": 0,
+        "relations": 0,
+        "passive_income": -5,
+        "satisfaction": -15
+      },
+      "chance": 0.15
+    },
+    {
+      "name": "Lottery Win",
+      "type": "positive",
+      "description": "Wygrana w loterii! Nagły przypływ gotówki.",
+      "conditions": {},
+      "effects": {
+        "money": 40,
+        "health": 0,
+        "relations": 0,
+        "passive_income": 10,
+        "satisfaction": 20
+      },
+      "chance": 0.05
+    },
+    {
+      "name": "New Love",
+      "type": "positive",
+      "description": "Spotykasz kogoś wyjątkowego, poprawiając swoje relacje.",
+      "conditions": {},
+      "effects": {
+        "money": 0,
+        "health": 0,
+        "relations": 25,
+        "passive_income": 0,
+        "satisfaction": 15
+      },
+      "chance": 0.1
+    },
+    {
+      "name": "Seasonal Illness",
+      "type": "negative",
+      "description": "Sezonowe przeziębienie obniża Twoje zdrowie i samopoczucie.",
+      "conditions": {
+        "health": {"max": 80}
+      },
+      "effects": {
+        "money": 0,
+        "health": -15,
+        "relations": 0,
+        "passive_income": 0,
+        "satisfaction": -10
+      },
+      "chance": 0.2
+    },
+    {
+      "name": "Work Promotion",
+      "type": "positive",
+      "description": "Otrzymujesz awans i wyższą pensję.",
+      "conditions": {
+        "money": {"max": 90}
+      },
+      "effects": {
+        "money": 30,
+        "health": 0,
+        "relations": 0,
+        "passive_income": 5,
+        "satisfaction": 20
+      },
+      "chance": 0.1
+    }
+  ]
+  
