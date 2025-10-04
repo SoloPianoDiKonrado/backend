@@ -46,6 +46,7 @@ class Currency(str, Enum):
     RELATIONS = "relations"
     SATISFACTION = "satisfaction"
     PASSIVE_INCOME = "passive_income"
+    EDUCATION = "education"
 
 
 class CurrencyChange(BaseModel):
