@@ -1,93 +1,452 @@
 [
-    {
-      "name": "Heart Attack",
-      "type": "negative",
-      "description": "Twoje zdrowie jest krytycznie niskie, ryzyko zawału wzrasta.",
-      "conditions": {
-        "health": {"max": 40}
-      },
-      "effects": {
-        "money": -10,
-        "health": -30,
-        "relations": 0,
-        "passive_income": 0,
-        "satisfaction": -20
-      },
-      "chance": 0.1
-    },
-    {
-      "name": "Job Loss",
-      "type": "negative",
-      "description": "Nieoczekiwana utrata pracy i dochodu.",
-      "conditions": {},
-      "effects": {
-        "money": -25,
-        "health": 0,
-        "relations": 0,
-        "passive_income": -5,
-        "satisfaction": -15
-      },
-      "chance": 0.15
-    },
-    {
-      "name": "Lottery Win",
-      "type": "positive",
-      "description": "Wygrana w loterii! Nagły przypływ gotówki.",
-      "conditions": {},
-      "effects": {
-        "money": 40,
-        "health": 0,
-        "relations": 0,
-        "passive_income": 10,
-        "satisfaction": 20
-      },
-      "chance": 0.05
-    },
-    {
-      "name": "New Love",
-      "type": "positive",
-      "description": "Spotykasz kogoś wyjątkowego, poprawiając swoje relacje.",
-      "conditions": {},
-      "effects": {
-        "money": 0,
-        "health": 0,
-        "relations": 25,
-        "passive_income": 0,
-        "satisfaction": 15
-      },
-      "chance": 0.1
-    },
-    {
-      "name": "Seasonal Illness",
-      "type": "negative",
-      "description": "Sezonowe przeziębienie obniża Twoje zdrowie i samopoczucie.",
-      "conditions": {
-        "health": {"max": 80}
-      },
-      "effects": {
-        "money": 0,
-        "health": -15,
-        "relations": 0,
-        "passive_income": 0,
-        "satisfaction": -10
-      },
-      "chance": 0.2
-    },
-    {
-      "name": "Work Promotion",
-      "type": "positive",
-      "description": "Otrzymujesz awans i wyższą pensję.",
-      "conditions": {
-        "money": {"max": 90}
-      },
-      "effects": {
-        "money": 30,
-        "health": 0,
-        "relations": 0,
-        "passive_income": 5,
-        "satisfaction": 20
-      },
-      "chance": 0.1
-    }
-  ]
-  
+	{
+		"name": "Zawał serca",
+		"type": "negative",
+		"description": "Twoje zdrowie jest krytycznie niskie, ryzyko zawału wzrasta.",
+		"conditions": {
+			"health": { "max": 40 }
+		},
+		"effects": {
+			"money": -10,
+			"health": -30,
+			"relations": 0,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.1
+	},
+	{
+		"name": "Utrata pracy",
+		"type": "negative",
+		"description": "Nieoczekiwana utrata pracy i dochodu.",
+		"conditions": {},
+		"effects": {
+			"money": -25,
+			"health": 0,
+			"relations": 0,
+			"passive_income": -5,
+			"satisfaction": -15
+		},
+		"chance": 0.15
+	},
+	{
+		"name": "Wygrana w loterii",
+		"type": "positive",
+		"description": "Wygrana w loterii! Nagły przypływ gotówki.",
+		"conditions": {},
+		"effects": {
+			"money": 40,
+			"health": 0,
+			"relations": 0,
+			"passive_income": 10,
+			"satisfaction": 20
+		},
+		"chance": 0.05
+	},
+	{
+		"name": "Nowy partner",
+		"type": "positive",
+		"description": "Spotykasz kogoś wyjątkowego, poprawiając swoje relacje.",
+		"conditions": {},
+		"effects": {
+			"money": 0,
+			"health": 0,
+			"relations": 25,
+			"passive_income": 0,
+			"satisfaction": 15
+		},
+		"chance": 0.1
+	},
+	{
+		"name": "Sezonowe przeziębienie",
+		"type": "negative",
+		"description": "Sezonowe przeziębienie obniża Twoje zdrowie i samopoczucie.",
+		"conditions": {
+			"health": { "max": 80 }
+		},
+		"effects": {
+			"money": 0,
+			"health": -15,
+			"relations": 0,
+			"passive_income": 0,
+			"satisfaction": -10
+		},
+		"chance": 0.2
+	},
+	{
+		"name": "Awans",
+		"type": "positive",
+		"description": "Otrzymujesz awans i wyższą pensję.",
+		"conditions": {
+			"money": { "max": 90 }
+		},
+		"effects": {
+			"money": 30,
+			"health": 0,
+			"relations": 0,
+			"passive_income": 5,
+			"satisfaction": 20
+		},
+		"chance": 0.1
+	},
+	{
+		"name": "Wypadek samochodowy",
+		"type": "negative",
+		"description": "Ulegasz wypadkowi drogowemu. Twoje zdrowie i finanse cierpią.",
+		"conditions": {
+			"health": { "min": 30 }
+		},
+		"effects": {
+			"money": -20,
+			"health": -25,
+			"relations": -5,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.08
+	},
+	{
+		"name": "Spadek po krewnym",
+		"type": "positive",
+		"description": "Dostajesz spadek po dalekim krewnym – życie staje się łatwiejsze.",
+		"conditions": {},
+		"effects": {
+			"money": 50,
+			"health": 0,
+			"relations": 0,
+			"passive_income": 5,
+			"satisfaction": 10
+		},
+		"chance": 0.03
+	},
+	{
+		"name": "Kłótnia z bliską osobą",
+		"type": "negative",
+		"description": "Poważna kłótnia z bliską osobą pogarsza twoje relacje i nastrój.",
+		"conditions": {},
+		"effects": {
+			"money": 0,
+			"health": -5,
+			"relations": -20,
+			"passive_income": 0,
+			"satisfaction": -15
+		},
+		"chance": 0.12
+	},
+	{
+		"name": "Zdrowy tryb życia",
+		"type": "positive",
+		"description": "Zaczynasz dbać o siebie – poprawiasz zdrowie i samopoczucie.",
+		"conditions": {
+			"health": { "max": 90 }
+		},
+		"effects": {
+			"money": -5,
+			"health": 20,
+			"relations": 0,
+			"passive_income": 0,
+			"satisfaction": 15
+		},
+		"chance": 0.15
+	},
+	{
+		"name": "Inwestycja nie wypaliła",
+		"type": "negative",
+		"description": "Twoja inwestycja okazała się porażką, tracisz pieniądze.",
+		"conditions": {
+			"money": { "min": 40 }
+		},
+		"effects": {
+			"money": -30,
+			"health": 0,
+			"relations": 0,
+			"passive_income": -5,
+			"satisfaction": -10
+		},
+		"chance": 0.07
+	},
+	{
+		"name": "Narodziny dziecka",
+		"type": "positive",
+		"description": "Rodzi się dziecko – więcej obowiązków, ale też szczęścia.",
+		"conditions": {
+			"relations": { "min": 30 }
+		},
+		"effects": {
+			"money": -10,
+			"health": -5,
+			"relations": 20,
+			"passive_income": 0,
+			"satisfaction": 25
+		},
+		"chance": 0.05
+	},
+	{
+		"name": "Nagła choroba bliskiego",
+		"type": "negative",
+		"description": "Bliska osoba poważnie choruje – stres i obciążenie psychiczne.",
+		"conditions": {},
+		"effects": {
+			"money": -15,
+			"health": -10,
+			"relations": -10,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.1
+	},
+	{
+		"name": "Udana inwestycja",
+		"type": "positive",
+		"description": "Twoja inwestycja przynosi zyski – poprawiasz finanse i pasywny dochód.",
+		"conditions": {
+			"money": { "min": 30 }
+		},
+		"effects": {
+			"money": 35,
+			"health": 0,
+			"relations": 0,
+			"passive_income": 10,
+			"satisfaction": 20
+		},
+		"chance": 0.06
+	},
+	{
+		"name": "Depresja",
+		"type": "negative",
+		"description": "Spadek nastroju i energii wpływa negatywnie na wszystkie aspekty życia.",
+		"conditions": {
+			"satisfaction": { "max": 30 }
+		},
+		"effects": {
+			"money": -5,
+			"health": -15,
+			"relations": -10,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.09
+	},
+	{
+		"name": "Przeprowadzka do nowego miasta",
+		"type": "positive",
+		"description": "Zmieniasz miejsce zamieszkania – nowe możliwości i znajomości.",
+		"conditions": {},
+		"effects": {
+			"money": -10,
+			"health": 0,
+			"relations": 10,
+			"passive_income": 0,
+			"satisfaction": 15
+		},
+		"chance": 0.08
+	},
+	{
+		"name": "Utrata mieszkania",
+		"type": "negative",
+		"description": "Z powodu problemów finansowych tracisz dach nad głową.",
+		"conditions": {
+			"money": { "max": 20 }
+		},
+		"effects": {
+			"money": -15,
+			"health": -10,
+			"relations": -10,
+			"passive_income": 0,
+			"satisfaction": -25
+		},
+		"chance": 0.05
+	},
+	{
+		"name": "Własny biznes",
+		"type": "positive",
+		"description": "Zakładasz własną firmę – nowe źródło dochodu.",
+		"conditions": {
+			"money": { "min": 50 }
+		},
+		"effects": {
+			"money": -20,
+			"health": -5,
+			"relations": 0,
+			"passive_income": 15,
+			"satisfaction": 25
+		},
+		"chance": 0.07
+	},
+	{
+		"name": "Biznes upada",
+		"type": "negative",
+		"description": "Twoja firma zbankrutowała – ogromne straty finansowe.",
+		"conditions": {
+			"passive_income": { "min": 5 }
+		},
+		"effects": {
+			"money": -30,
+			"health": -5,
+			"relations": 0,
+			"passive_income": -10,
+			"satisfaction": -20
+		},
+		"chance": 0.05
+	},
+	{
+		"name": "Nowe hobby",
+		"type": "positive",
+		"description": "Odkrywasz nowe hobby, które poprawia Twoje samopoczucie.",
+		"conditions": {},
+		"effects": {
+			"money": -5,
+			"health": 5,
+			"relations": 5,
+			"passive_income": 0,
+			"satisfaction": 20
+		},
+		"chance": 0.12
+	},
+	{
+		"name": "Wypalenie zawodowe",
+		"type": "negative",
+		"description": "Praca Cię przytłacza – Twoje zdrowie psychiczne i satysfakcja spadają.",
+		"conditions": {},
+		"effects": {
+			"money": 0,
+			"health": -15,
+			"relations": -5,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.1
+	},
+	{
+		"name": "Podróż życia",
+		"type": "positive",
+		"description": "Spełniasz marzenie i wyjeżdżasz w podróż życia!",
+		"conditions": {},
+		"effects": {
+			"money": -15,
+			"health": 10,
+			"relations": 5,
+			"passive_income": 0,
+			"satisfaction": 30
+		},
+		"chance": 0.06
+	},
+	{
+		"name": "Kradzież",
+		"type": "negative",
+		"description": "Padłeś ofiarą kradzieży i straciłeś część swojego majątku.",
+		"conditions": {
+			"money": { "min": 20 }
+		},
+		"effects": {
+			"money": -20,
+			"health": -5,
+			"relations": 0,
+			"passive_income": 0,
+			"satisfaction": -10
+		},
+		"chance": 0.07
+	},
+	{
+		"name": "Pomoc przyjaciela",
+		"type": "positive",
+		"description": "Przyjaciel pomaga Ci w trudnej sytuacji – poprawia to wasze relacje.",
+		"conditions": {
+			"relations": { "min": 10 }
+		},
+		"effects": {
+			"money": 10,
+			"health": 5,
+			"relations": 15,
+			"passive_income": 0,
+			"satisfaction": 15
+		},
+		"chance": 0.08
+	},
+	{
+		"name": "Problemy prawne",
+		"type": "negative",
+		"description": "Masz problemy z prawem – koszty rosną, a stres wpływa na Twoje zdrowie.",
+		"conditions": {},
+		"effects": {
+			"money": -20,
+			"health": -10,
+			"relations": -5,
+			"passive_income": 0,
+			"satisfaction": -15
+		},
+		"chance": 0.06
+	},
+	{
+		"name": "Adopcja zwierzaka",
+		"type": "positive",
+		"description": "Adoptujesz zwierzaka – codzienność staje się radośniejsza.",
+		"conditions": {},
+		"effects": {
+			"money": -5,
+			"health": 5,
+			"relations": 10,
+			"passive_income": 0,
+			"satisfaction": 20
+		},
+		"chance": 0.12
+	},
+	{
+		"name": "Kryzys wieku średniego",
+		"type": "negative",
+		"description": "Zaczynasz kwestionować swoje życiowe decyzje – spada satysfakcja.",
+		"conditions": {
+			"satisfaction": { "max": 50 }
+		},
+		"effects": {
+			"money": -5,
+			"health": -10,
+			"relations": -5,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.07
+	},
+	{
+		"name": "Premia roczna",
+		"type": "positive",
+		"description": "Otrzymujesz premię w pracy – miła niespodzianka!",
+		"conditions": {},
+		"effects": {
+			"money": 20,
+			"health": 0,
+			"relations": 0,
+			"passive_income": 0,
+			"satisfaction": 10
+		},
+		"chance": 0.09
+	},
+	{
+		"name": "Przegrana sprawa sądowa",
+		"type": "negative",
+		"description": "Przegrywasz sprawę w sądzie – duże koszty i stres.",
+		"conditions": {},
+		"effects": {
+			"money": -30,
+			"health": -10,
+			"relations": -5,
+			"passive_income": 0,
+			"satisfaction": -20
+		},
+		"chance": 0.04
+	},
+	{
+		"name": "Wygrana sprawa sądowa",
+		"type": "positive",
+		"description": "Wygrywasz sprawę w sądzie – poprawa sytuacji finansowej i satysfakcji.",
+		"conditions": {},
+		"effects": {
+			"money": 25,
+			"health": 5,
+			"relations": 5,
+			"passive_income": 0,
+			"satisfaction": 20
+		},
+		"chance": 0.04
+	}
+]

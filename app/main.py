@@ -156,7 +156,10 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - Średnie: 2000–20000
     - Duże: powyżej 20000
     (Dostosuj do stanu game_state: jeśli gracz ma 500 zł, nie proponuj kosztu 1 000 000.)
-    4. Zachowaj ograniczenia `health` w logice: `health` nie powinno wyjść poza 0–200. Jeżeli wynik sugeruje spadek poniżej 0 lub wzrost powyżej 200, dopasuj go (model może zwrócić wartości, a serwer/validator powinien je obciąć — nadal jednak staraj się generować realistyczne wartości mieszczące się w zakresie).
+    Ceny powinny miec sensowny zakres w ramach roku czyli np. praca na etacie nie powinna miec zarobków w wysokosci 2000 - tylko jesli minimalna placa w polsce to okolo 5000 miesiecznie to wartosc minimalna to powinno byc w okolicach minimum 60000,
+    tak samo relatywnie wszystkie inne rzeczy powinny byc w tych samych rzedach wielkosci. 
+    Rzecz która ma cenę wiekszą od 0 nie powinna później powodowac rowniez spadku pieniedzy w results.
+    4. Zachowaj ograniczenia `health` w logice: `health` nie powinno wyjść poza 0-100. Jeżeli wynik sugeruje spadek poniżej 0 lub wzrost powyżej 100, dopasuj go (model może zwrócić wartości, a serwer/validator powinien je obciąć — nadal jednak staraj się generować realistyczne wartości mieszczące się w zakresie).
     5. Balans: zaproponuj opcje o różnych profilach ryzyka — bezpieczna, zrównoważona, ryzykowna — ale zawsze zgodne z wiekiem i zasobami gracza.
     6. Jeśli `money` jest bardzo niskie (<500) generuj przynajmniej jedną opcję o zerowym koszcie (np. "Poszukiwanie pracy dorywczej") aby nie zablokować rozgrywki.
 
