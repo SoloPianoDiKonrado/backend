@@ -4,7 +4,7 @@ from google import genai
 from google.genai.types import GenerateContentConfig, HttpOptions
 
 class GeminiChat:
-    def __init__(self, model_name="gemini-2.5-flash"):
+    def __init__(self, model_name="gemini-2.5-flash-lite"):
         # Load environment variables
         load_dotenv()
         self.api_key = os.getenv("GEMINI_API_KEY")
