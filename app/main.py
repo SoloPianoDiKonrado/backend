@@ -31,6 +31,10 @@ class GameInterface(BaseModel):
     satisfaction: int
     passive_income: int
 
+    age: int
+    job: str
+    education: str
+
 class Currency(str, Enum):
     MONEY = "money"
     HEALTH = "health"
