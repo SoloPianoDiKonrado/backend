@@ -7,6 +7,7 @@ from typing import Optional, Any, Dict
 import json
 import os
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 # Załaduj zmienne środowiskowe
 load_dotenv()
@@ -74,6 +75,14 @@ app = FastAPI(
     title="Chat with Gemini API",
     description="API do czatu z Google Gemini",
     version="1.1.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # zezwól na wszystkie domeny
+    allow_credentials=True,
+    allow_methods=["POST", "GET", "OPTIONS"],  # tylko te metody
+    allow_headers=["Content-Type", "Accept"],  # tylko te nagłówki
 )
 
 @app.on_event("startup")
