@@ -61,6 +61,7 @@ class GameOption(BaseModel):
     currency: Currency
     results: list[CurrencyChange]
     is_work_related: bool
+    job_name: Optional[str]
 
 class GenerateYearResponse(BaseModel):
     options: list[GameOption]
@@ -125,6 +126,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
             "price": <int, całkowita wartość >= 0>,
             "currency": "<one of: money, health, relations, satisfaction>",
             "is_work_related": <boolean>,
+            "job_name": <string, nazwa pracy>,
             "results": [
             {"currency": "<money|health|relations|satisfaction|passive_income>", "amount": <int (może być ujemny)>},
             ...
@@ -137,14 +139,14 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - `name`: max ~40 znaków, czytelna i krótka (np. "Kontynuuj studia", "Zmiana pracy", "Zainwestuj w niszowy kurs").
     - `price`: natychmiastowy koszt w jednostce wskazanej przez `currency`. Zawsze liczba całkowita >= 0.
     - `currency`: określa **walutę, z której zapłaci gracz natychmiast** (jedna z czterech).
-    - `is_work_related`: ustaw na `true`, jeśli opcja bezpośrednio dotyczy podjęcia nowej pracy, zmiany pracy, awansu lub założenia działalności gospodarczej (czyli sytuacji, które będą wymagały ustalenia szczegółów umowy i składek ZUS). W przeciwnym razie ustaw na `false` (np. dla edukacji, inwestycji, hobby).
+    - `is_work_related`: ustaw na `true`, jeśli opcja bezpośrednio dotyczy podjęcia nowej pracy, zmiany pracy, awansu lub założenia działalności gospodarczej (czyli sytuacji, które będą wymagały ustalenia szczegółów umowy i składek ZUS). W przeciwnym razie ustaw na `false` (np. dla edukacji, inwestycji, hobby). Jeśli opcja dotyczy podjęcia nowej pracy, ustaw `job_name` na nazwę nowej pracy.
     - `results`: lista skutków w postaci zmian walut (mogą być dodatnie lub ujemne). Każdy obiekt ma `currency` i `amount` (int). `amount` odzwierciedla efekt po pięciu latach (sumaryczna zmiana w danej walucie).
     - Dopuszczalna długość listy `results`: 1–3 wpisów (najczęściej 1–2). MAX 3 POWINNO BYC RZADKO AZ TYLE
     5. Nie dodawaj żadnych dodatkowych kluczy (np. "explanation", "probability", "meta") — tylko powyższe pola.
     6. Wszystkie wartości muszą być spójne semantycznie z przekazanym stanem gry.
 
     W pewnym momencie mozesz zaproponowac opcje zeby wziac ślub - tylko jeśli user ma married=false
-    
+
     Reguły tworzenia sensownych i edukacyjnych opcji (heurystyki):
     1. Bierz pod uwagę wszystkie pola `game_interface`: age, money, health (0-100), relations, satisfaction, passive_income, job, education, married. Generuj opcje adekwatne do wieku (np. osoby 18–30: studia, start kariery, ryzyko zadłużenia; 45–60: zmiana pracy, ubezpieczenia, inwestycje; >=65: jeśli bywa wywoływane, zwróć pustą listę).
     2. Zadbaj o realność wpływów:
@@ -193,6 +195,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
         "price":0,
         "currency":"money",
         "is_work_related": true,
+        "job_name": "Magazynier",
         "results":[
             {"currency":"money","amount":6000},
             {"currency":"health","amount":-5},
