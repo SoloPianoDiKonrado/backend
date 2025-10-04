@@ -1,14 +1,13 @@
-# FastAPI + PostgreSQL Boilerplate 🚀
+# Chat with Gemini API 🚀
 
-Pełny boilerplate z FastAPI, PostgreSQL, SQLAlchemy ORM i Docker Compose z hot-reload.
+API do czatu z Google Gemini przy użyciu LangChain i FastAPI. Pozwala na prowadzenie rozmowy z modelem językowym Google Gemini, przechowywanie historii rozmowy w pamięci oraz jej czyszczenie.
 
 ## Stack Technologiczny
 
 - **FastAPI** - nowoczesny framework webowy
-- **PostgreSQL** - baza danych
-- **SQLAlchemy** - ORM
-- **Alembic** - migracje bazy danych
-- **Docker & Docker Compose** - konteneryzacja z hot-reload
+- **LangChain** - framework do pracy z dużymi modelami językowymi
+- **Google Gemini** - model językowy od Google
+- **Docker & Docker Compose** - konteneryzacja
 - **Pydantic** - walidacja danych
 
 ## Struktura Projektu
@@ -17,31 +16,28 @@ Pełny boilerplate z FastAPI, PostgreSQL, SQLAlchemy ORM i Docker Compose z hot-
 .
 ├── app/
 │   ├── __init__.py
-│   ├── main.py          # Główna aplikacja FastAPI
-│   ├── config.py        # Konfiguracja
-│   ├── database.py      # Setup bazy danych
-│   ├── models.py        # Modele SQLAlchemy
-│   ├── schemas.py       # Schematy Pydantic
-│   └── crud.py          # Operacje CRUD
-├── alembic/             # Migracje bazy danych
+│   ├── main.py          # Główna aplikacja FastAPI z endpointami
+│   └── chat_gemini.py   # Klasa ChatWithGemini do obsługi czatu
 ├── docker-compose.yml   # Konfiguracja Docker Compose
 ├── Dockerfile           # Dockerfile aplikacji
 ├── requirements.txt     # Zależności Python
-└── .env.example         # Przykładowa konfiguracja
+├── .env.example         # Przykładowa konfiguracja
+└── README.md           # Ten plik
 ```
 
 ## Szybki Start
 
-### 1. Sklonuj i przygotuj środowisko
+### 1. Przygotuj środowisko
 
 ```bash
 # Skopiuj przykładową konfigurację
 cp .env.example .env
 
-# Opcjonalnie: edytuj .env jeśli chcesz zmienić domyślne wartości
+# Edytuj .env i dodaj swój klucz API Google Gemini
+# GOOGLE_API_KEY=your_actual_google_api_key_here
 ```
 
-### 2. Uruchom aplikację z Docker Compose
+### 2. Uruchom aplikację
 
 ```bash
 # Zbuduj i uruchom kontenery
@@ -60,103 +56,141 @@ Aplikacja będzie dostępna pod adresem:
 
 ```bash
 docker-compose down
-
-# Zatrzymaj i usuń volumes (UWAGA: skasuje dane w bazie!)
-docker-compose down -v
 ```
 
-## Hot Reload
-
-Aplikacja ma włączony **hot-reload** - każda zmiana w kodzie automatycznie przeładuje serwer. Nie musisz restartować kontenerów!
-
 ## Endpointy API
+
+### Główna strona
+```bash
+GET /
+```
+Zwraca informacje o dostępnych endpointach.
 
 ### Health Check
 ```bash
 GET /health
 ```
+Sprawdza czy API działa.
 
-### Users CRUD
-
-**Utwórz użytkownika**
+### Chat z Gemini
 ```bash
-POST /users/
+POST /chat
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "username": "johndoe",
-  "password": "secret123"
+  "message": "Twoja wiadomość do modelu"
 }
 ```
 
-**Pobierz wszystkich użytkowników**
-```bash
-GET /users/
-```
-
-**Pobierz użytkownika po ID**
-```bash
-GET /users/{user_id}
-```
-
-**Zaktualizuj użytkownika**
-```bash
-PUT /users/{user_id}
-Content-Type: application/json
-
+Odpowiedź:
+```json
 {
-  "email": "newemail@example.com",
-  "username": "newusername",
-  "is_active": true
+  "response": "Odpowiedź od modelu Gemini",
+  "status": "success",
+  "model": "gemini-pro"
 }
 ```
 
-**Usuń użytkownika**
+### Historia rozmowy
 ```bash
-DELETE /users/{user_id}
+GET /history
+```
+
+Odpowiedź:
+```json
+{
+  "history": [
+    {
+      "type": "human",
+      "content": "Pierwsza wiadomość użytkownika"
+    },
+    {
+      "type": "ai",
+      "content": "Odpowiedź modelu"
+    }
+  ],
+  "total_messages": 2
+}
+```
+
+### Statystyki rozmowy
+```bash
+GET /stats
+```
+
+Odpowiedź:
+```json
+{
+  "total_messages": 10,
+  "human_messages": 5,
+  "ai_messages": 5,
+  "model": "gemini-pro",
+  "temperature": 0.7
+}
+```
+
+### Czyszczenie historii
+```bash
+DELETE /clear
+```
+
+Odpowiedź:
+```json
+{
+  "message": "Historia rozmowy została wyczyszczona",
+  "status": "success"
+}
 ```
 
 ## Przykładowe Requesty (curl)
 
 ```bash
-# Utwórz użytkownika
-curl -X POST http://localhost:3000/users/ \
+# Wyślij wiadomość do modelu
+curl -X POST http://localhost:3000/chat \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","username":"testuser","password":"pass123"}'
+  -d '{"message":"Cześć, jak się masz?"}'
 
-# Pobierz użytkowników
-curl http://localhost:3000/users/
+# Pobierz historię rozmowy
+curl http://localhost:3000/history
 
-# Pobierz użytkownika po ID
-curl http://localhost:3000/users/1
+# Pobierz statystyki
+curl http://localhost:3000/stats
 
-# Zaktualizuj użytkownika
-curl -X PUT http://localhost:3000/users/1 \
-  -H "Content-Type: application/json" \
-  -d '{"username":"updateduser"}'
-
-# Usuń użytkownika
-curl -X DELETE http://localhost:3000/users/1
+# Wyczyść historię rozmowy
+curl -X DELETE http://localhost:3000/clear
 ```
 
-## Migracje Bazy Danych (Alembic)
+## Konfiguracja
 
-### Utwórz nową migrację
+### Zmienne środowiskowe
 
-```bash
-# Wejdź do kontenera aplikacji
-docker-compose exec app bash
+Utwórz plik `.env` na podstawie `.env.example`:
 
-# Utwórz migrację automatycznie na podstawie modeli
-alembic revision --autogenerate -m "Initial migration"
-
-# Zastosuj migracje
-alembic upgrade head
-
-# Cofnij ostatnią migrację
-alembic downgrade -1
+```env
+GOOGLE_API_KEY=your_google_api_key_here
 ```
+
+Aby uzyskać klucz API Google Gemini:
+1. Wejdź na [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Zaloguj się na swoje konto Google
+3. Utwórz nowy klucz API
+4. Skopiuj klucz do pliku `.env`
+
+### Opcjonalne parametry ChatWithGemini
+
+Możesz skonfigurować klasę `ChatWithGemini` w `app/chat_gemini.py`:
+
+```python
+chat_instance = ChatWithGemini(
+    api_key="your_api_key",           # Klucz API (opcjonalny)
+    model_name="gemini-pro",         # Nazwa modelu (domyślnie: gemini-pro)
+    temperature=0.7                  # Kreatywność modelu (0.0-1.0)
+)
+```
+
+## Hot Reload
+
+Aplikacja ma włączony **hot-reload** - każda zmiana w kodzie automatycznie przeładuje serwer. Nie musisz restartować kontenerów!
 
 ## Rozwój Lokalny (bez Dockera)
 
@@ -166,78 +200,28 @@ Jeśli chcesz uruchomić aplikację lokalnie:
 # Utwórz virtual environment
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# lub
-venv\Scripts\activate  # Windows
 
 # Zainstaluj zależności
 pip install -r requirements.txt
 
-# Uruchom PostgreSQL lokalnie lub zmień DATABASE_URL w .env
+# Skonfiguruj GOOGLE_API_KEY w .env
 
 # Uruchom aplikację
 uvicorn app.main:app --reload --port 3000
 ```
 
-## Baza Danych
-
-PostgreSQL działa w kontenerze Docker i jest dostępna na:
-- **Host**: localhost
-- **Port**: 5432
-- **User**: postgres
-- **Password**: postgres
-- **Database**: app_db
-
-Możesz połączyć się z bazą używając dowolnego klienta PostgreSQL (pgAdmin, DBeaver, psql, etc.)
-
-```bash
-# Połącz się przez psql
-docker-compose exec db psql -U postgres -d app_db
-```
-
-## Logi
-
-```bash
-# Zobacz logi wszystkich serwisów
-docker-compose logs
-
-# Zobacz logi tylko aplikacji
-docker-compose logs app
-
-# Zobacz logi z follow
-docker-compose logs -f app
-```
-
-## TODO / Dalszy Rozwój
-
-- [ ] Dodać hashowanie haseł (bcrypt/passlib)
-- [ ] Dodać autentykację JWT
-- [ ] Dodać testy (pytest)
-- [ ] Dodać CORS middleware
-- [ ] Dodać rate limiting
-- [ ] Dodać więcej modeli i relacji
-- [ ] Dodać paginację
-- [ ] Dodać filtering i sorting
-
 ## Troubleshooting
 
-### Port już zajęty
-Jeśli port 3000 lub 5432 jest zajęty, zmień porty w `docker-compose.yml`:
-```yaml
-ports:
-  - "TWOJ_PORT:3000"  # dla aplikacji
-  - "TWOJ_PORT:5432"  # dla PostgreSQL
-```
+### Brak klucza API
+Jeśli nie skonfigurujesz `GOOGLE_API_KEY`, aplikacja zwróci błąd 500 przy pierwszym użyciu czatu.
 
-### Problemy z bazą danych
+### Problemy z kontenerami
 ```bash
-# Usuń volumes i uruchom od nowa
-docker-compose down -v
-docker-compose up --build
-```
-
-### Rebuild kontenera
-```bash
+# Rebuild kontenera
 docker-compose up --build --force-recreate
+
+# Zobacz logi
+docker-compose logs app
 ```
 
 ## Licencja
