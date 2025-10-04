@@ -4,6 +4,7 @@ from enum import Enum
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
 from typing import Optional, Any
+import json
 import os
 from dotenv import load_dotenv
 
@@ -35,6 +36,9 @@ class GameInterface(BaseModel):
     job: str
     education: str
 
+class GenerateYearRequest(BaseModel):
+    game_state: GameInterface
+
 class Currency(str, Enum):
     MONEY = "money"
     HEALTH = "health"
@@ -53,10 +57,17 @@ class GameOption(BaseModel):
     currency: Currency
     results: list[CurrencyChange]
 
-class GenerateYear(BaseModel):
+class GenerateYearResponse(BaseModel):
     flavour_text: str
     options: list[GameOption]
 
+class GameHistory(BaseModel):
+    options: list[GameOption]
+
+class GenerateYearRequest(BaseModel):
+    game_interface: GameInterface
+    options_amount: int
+    history: list[GameHistory]
 
 app = FastAPI(
     title="Chat with Gemini API",
@@ -81,6 +92,49 @@ def read_root():
             "clear": "/clear - czyszczenie historii rozmowy",
         }
     }
+
+
+@app.post("/generate_year", response_model=GenerateYearResponse)
+def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
+    """
+    Generates a new year in the game based on the current game state.
+    """
+    chat = get_chat_instance()
+
+    # The system prompt is intentionally left empty as per the user's request.
+    # It can be filled in later with instructions for the model.
+    system_prompt = ""
+
+    user_prompt = f"""
+    Jesteś Mistrzem Gry w symulatorze "Bieg przez życie". Twoim celem jest tworzenie klarownych, lat życia. Zawsze odpowiadaj WYŁĄCZNIE w formacie JSON.
+    **Zasady generowania:**
+    1.  **Format odpowiedzi:** Zawsze zwracaj poprawny JSON.
+    Stan gry:
+    {request.game_state.json()}
+
+    Proszę podać odpowiedź w prawidłowym formacie JSON, zgodnie ze strukturą modelu GenerateYearResponse.
+    Odpowiedź powinna być obiektem JSON z dwoma kluczami: 'flavour_text' (ciąg znaków) i 'options' (lista obiektów).
+    Każdy obiekt opcji musi mieć następujące klucze: 'name' (ciąg znaków), 'price' (liczba całkowita), 'currency' (jedno z: 'money', 'health', 'relations', 'satisfaction') i 'results' (lista obiektów zmian waluty).
+    Każdy obiekt zmiany waluty musi mieć klucze 'currency' i 'amount'.
+    """
+
+
+    try:
+        response_text = chat.message(user_prompt)
+        # Assuming the model returns a JSON string, we parse it.
+        response_json = json.loads(response_text)
+        return GenerateYearResponse(**response_json)
+    except json.JSONDecodeError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to decode JSON from model response."
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An error occurred: {str(e)}"
+        )
+
 
 @app.get("/health")
 def health_check():
