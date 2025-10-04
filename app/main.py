@@ -27,14 +27,14 @@ class ChatResponse(BaseModel):
 
 class GameInterface(BaseModel):
     money: int
-    health: int #0-200
+    health: int  # 0–200
     relations: int
     satisfaction: int
     passive_income: int
 
-    age: int
-    job: str
-    education: str
+    age: Optional[int] = None
+    job: Optional[str] = None
+    education: Optional[str] = None
 
 class GenerateYearRequest(BaseModel):
     game_state: GameInterface
