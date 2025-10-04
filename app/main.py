@@ -216,6 +216,8 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - W przypadku niskiego `relations` lub `satisfaction` generuj conajmniej jedną opcję nastawioną na poprawę tych walorów.
 
     Podsumowanie: bądź roztropnym, realistycznym, wyważonym Mistrzem Gry. Zwracaj wyłącznie poprawny JSON odpowiadający podanemu schematowi i regułom. Żadnego dodatkowego tekstu.
+
+    Aha nie pierdol ze kurs zawodowy daje 80k rocznie, jak mi taki znajdziesz to juz zaraz na niego wypierdalam
     """
     print(request.history != [], request.history == [])
 
