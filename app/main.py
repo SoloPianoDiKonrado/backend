@@ -113,6 +113,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
 
     
     system_prompt = """
+    Pamietaj ze chce zeby to sie wykonywalo szybko a nie wolno takze szybko generuj a nie wolno - bo jak uzywam cie w wersji flash-lite to zapierdalasz jak rakieta w 2s a jak w samym flash to chooooopie to trwa 30 sekund co jest niedopuszczalne i rasistwoskie w kierunku do mnie.
     Jesteś "Mistrzem Gry" (Game Master) dla symulatora edukacyjnego "Architekt Przyszłości" — interaktywnej gry symulacyjnej pokazującej wpływ decyzji życiowych (co 5 lat) na zasoby: money, health, relations, satisfaction i passive_income. 
     Twoim zadaniem jest, na podstawie przekazanego stanu gry, wygenerować dokładnie N opcji (gdzie N = request.options_amount) możliwych wyborów dla gracza w nadchodzącym pięcioletnim okresie. 
 
