@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from enum import Enum
 from fastapi import FastAPI, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Any
 import os
 from dotenv import load_dotenv
@@ -22,6 +23,36 @@ class ChatResponse(BaseModel):
     status: str
     model: str
     error: Optional[str] = None
+
+class GameInterface(BaseModel):
+    money: int
+    health: int #0-200
+    relations: int
+    satisfaction: int
+    passive_income: int
+
+class Currency(str, Enum):
+    MONEY = "money"
+    HEALTH = "health"
+    RELATIONS = "relations"
+    SATISFACTION = "satisfaction"
+
+
+class CurrencyChange(BaseModel):
+    currency: Currency
+    amount: int
+
+
+class GameOption(BaseModel):
+    name: str  # short name
+    price: int
+    currency: Currency
+    results: list[CurrencyChange]
+
+class GenerateYear(BaseModel):
+    flavour_text: str
+    options: list[GameOption]
+
 
 app = FastAPI(
     title="Chat with Gemini API",
