@@ -77,8 +77,7 @@
 		"name": "Premia",
 		"type": "positive",
 		"description": "Otrzymujesz premię w pracy",
-		"conditions": {
-		},
+		"conditions": {},
 		"effects": {
 			"money": 3000,
 			"health": 0,
@@ -130,7 +129,7 @@
 			"passive_income": 0,
 			"satisfaction": -15
 		},
-		"chance": 0.20
+		"chance": 0.2
 	},
 	{
 		"name": "Zdrowy tryb życia",
@@ -305,8 +304,8 @@
 		"type": "positive",
 		"description": "Spełniasz marzenie i wyjeżdżasz w podróż życia!",
 		"conditions": {
-      "money": { "min": 30000 }
-    },
+			"money": { "min": 30000 }
+		},
 		"effects": {
 			"money": -15000,
 			"health": 10,
@@ -314,7 +313,7 @@
 			"passive_income": 0,
 			"satisfaction": 30
 		},
-		"chance": 0.10
+		"chance": 0.1
 	},
 	{
 		"name": "Kradzież",
@@ -338,7 +337,7 @@
 		"description": "Przyjaciel pomaga Ci w trudnej sytuacji – poprawia to wasze relacje.",
 		"conditions": {
 			"relations": { "min": 10 },
-      "money": { "max": 500 }
+			"money": { "max": 500 }
 		},
 		"effects": {
 			"money": 1000,
@@ -420,5 +419,19 @@
 			"satisfaction": 20
 		},
 		"chance": 0.04
+	},
+	{
+		"name": "To nie kornik to komornik",
+		"type": "negative",
+		"description": "Urząd skarbowy sprawdził twoje zyski i okazało się ze to całkiem lewe pieniądze",
+		"conditions": { "money": { "min": 100000 } },
+		"effects": {
+			"money": -100000,
+			"health": 0,
+			"relations": 0,
+			"passive_income": -1000,
+			"satisfaction": -50
+		},
+		"chance": 0.5
 	}
 ]
