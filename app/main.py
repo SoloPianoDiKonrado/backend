@@ -39,8 +39,38 @@ app.add_middleware(
     allow_origins=["*"],  # zezwól na wszystkie domeny
     allow_credentials=True,
     allow_methods=["POST", "GET", "OPTIONS"],
-    allow_headers=["Content-Type", "Accept"], 
+    allow_headers=["Content-Type", "Accept"],
 )
+
+# Import additional modules for IP logging
+from fastapi import Request
+import logging
+import datetime
+
+# Configure logging for IP tracking
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ip_logger")
+
+# IP Logger Middleware
+@app.middleware("http")
+async def log_ip_middleware(request: Request, call_next):
+    """
+    Middleware to log IP addresses of incoming requests.
+    """
+    # Get client IP address
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Get additional request info
+    method = request.method
+    url_path = request.url.path
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Log the request
+    logger.info(f"[{timestamp}] IP: {client_ip} - Method: {method} - Path: {url_path}")
+
+    # Continue processing the request
+    response = await call_next(request)
+    return response
 
 @app.on_event("startup")
 def startup_event():
@@ -96,7 +126,6 @@ Zwracaj TYLKO ten JSON (zero tekstu poza nim):
     }
   ]
 }
-
 Wymagania strukturalne:
 - Dokładnie N opcji w tablicy (N z requestu)
 - price: int >= 0 (koszt natychmiastowy)
