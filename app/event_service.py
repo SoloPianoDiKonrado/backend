@@ -13,15 +13,32 @@ class EventService:
         self.triggered_events = set()
 
     def _check_conditions(self, event: Dict[str, Any], game_state: GameInterface) -> bool:
-        """Sprawdza czy warunki wydarzenia są spełnione"""
+        """
+        Sprawdza czy warunki wydarzenia są spełnione.
+        Obsługuje zarówno warunki numeryczne (min, max),
+        jak i logiczne (np. married: true) lub tekstowe (np. job: "Lekarz").
+        """
         conditions = event.get("conditions", {})
+
         for stat, limits in conditions.items():
-            value = getattr(game_state, stat, 0)
-            if "max" in limits and value > limits["max"]:
-                return False
-            if "min" in limits and value < limits["min"]:
-                return False
+            value = getattr(game_state, stat, None)
+
+            if isinstance(limits, dict):
+                if "max" in limits and value is not None and value > limits["max"]:
+                    return False
+                if "min" in limits and value is not None and value < limits["min"]:
+                    return False
+
+            elif isinstance(limits, bool):
+                if value != limits:
+                    return False
+
+            elif isinstance(limits, str):
+                if str(value).lower() != limits.lower():
+                    return False
+
         return True
+
 
     def _apply_effects(self, game_state: GameInterface, effects: Dict[str, int]) -> GameInterface:
         """Aplikuje efekty wydarzenia do stanu gry"""
