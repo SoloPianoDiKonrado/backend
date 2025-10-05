@@ -8,6 +8,8 @@ import json
 import os
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
+from app.summary_service import SummaryService
+from app.schemas import GameSummaryRequest, GameSummaryResponse, GenerateYearResponse, GameInterface
 
 # Załaduj zmienne środowiskowe
 load_dotenv()
@@ -26,49 +28,8 @@ class ChatResponse(BaseModel):
     model: str
     error: Optional[str] = None
 
-class GameInterface(BaseModel):
-    money: int
-    health: int  # 0–200
-    relations: int
-    satisfaction: int
-    passive_income: int
-
-    age: Optional[int] = None
-    job: Optional[str] = None
-    education: Optional[str] = None
-
 class GenerateYearRequest(BaseModel):
     game_state: GameInterface
-
-class Currency(str, Enum):
-    MONEY = "money"
-    HEALTH = "health"
-    RELATIONS = "relations"
-    SATISFACTION = "satisfaction"
-    PASSIVE_INCOME = "passive_income"
-
-
-class CurrencyChange(BaseModel):
-    currency: Currency
-    amount: int
-
-
-class GameOption(BaseModel):
-    name: str  # short name
-    price: int
-    currency: Currency
-    results: list[CurrencyChange]
-
-class GenerateYearResponse(BaseModel):
-    options: list[GameOption]
-
-class GameHistory(BaseModel):
-    options: list[GameOption]
-
-class GenerateYearRequest(BaseModel):
-    game_interface: GameInterface
-    options_amount: int
-    history: list[GameHistory]
 
 app = FastAPI(
     title="Chat with Gemini API",
@@ -80,8 +41,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # zezwól na wszystkie domeny
     allow_credentials=True,
-    allow_methods=["POST", "GET", "OPTIONS"],  # tylko te metody
-    allow_headers=["Content-Type", "Accept"],  # tylko te nagłówki
+    allow_methods=["POST", "GET", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept"], 
 )
 
 @app.on_event("startup")
@@ -342,6 +303,7 @@ from app.ai_event_generator import AIEventGenerator
 
 # Global AI event generator instance
 ai_generator = AIEventGenerator()
+summary_service = SummaryService()
 
 @app.post("/events/ai/describe")
 def generate_ai_description(event: GameEvent, game_state: GameInterface):
@@ -399,3 +361,10 @@ def trigger_event_with_ai_description(game_state: GameInterface):
         }
     
     return event_result
+
+@app.post("/summary")
+def get_summary(game_state: GameSummaryRequest) -> GameSummaryResponse:
+    """
+    Zwraca podsumowanie gry.
+    """
+    return summary_service.getGameSummary(game_state)
