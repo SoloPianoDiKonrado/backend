@@ -89,7 +89,7 @@ Zwracaj TYLKO ten JSON (zero tekstu poza nim):
       "price": 0,
       "currency": "money|health|relations|satisfaction",
       "is_work_related": false,
-      "job_name": "string (tylko gdy is_work_related=true)",
+      "job_name": "string (tylko gdy is_work_related=true)", bardzo ważne!
       "results": [
         {"currency": "money|health|relations|satisfaction|passive_income", "amount": -1000}
       ]
