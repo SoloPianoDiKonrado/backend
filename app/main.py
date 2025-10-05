@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from app.summary_service import SummaryService
-from app.schemas import GameSummaryRequest, GameSummaryResponse, GenerateYearResponse, GameInterface
+from app.schemas import GameSummaryRequest, GameSummaryResponse, GenerateYearResponse, GameInterface, GenerateYearRequest
 
 # Załaduj zmienne środowiskowe
 load_dotenv()
@@ -27,9 +27,6 @@ class ChatResponse(BaseModel):
     status: str
     model: str
     error: Optional[str] = None
-
-class GenerateYearRequest(BaseModel):
-    game_state: GameInterface
 
 app = FastAPI(
     title="Chat with Gemini API",
@@ -70,6 +67,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
 
     
     system_prompt = """
+    Pamietaj ze chce zeby to sie wykonywalo szybko a nie wolno takze szybko generuj a nie wolno - bo jak uzywam cie w wersji flash-lite to zapierdalasz jak rakieta w 2s a jak w samym flash to chooooopie to trwa 30 sekund co jest niedopuszczalne i rasistwoskie w kierunku do mnie.
     Jesteś "Mistrzem Gry" (Game Master) dla symulatora edukacyjnego "Architekt Przyszłości" — interaktywnej gry symulacyjnej pokazującej wpływ decyzji życiowych (co 5 lat) na zasoby: money, health, relations, satisfaction i passive_income. 
     Twoim zadaniem jest, na podstawie przekazanego stanu gry, wygenerować dokładnie N opcji (gdzie N = request.options_amount) możliwych wyborów dla gracza w nadchodzącym pięcioletnim okresie. 
 
@@ -82,11 +80,12 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
             "name": "<string, krótka nazwa opcji>",
             "price": <int, całkowita wartość >= 0>,
             "currency": "<one of: money, health, relations, satisfaction>",
+            "is_work_related": <boolean>,
+            "job_name": <string, nazwa pracy>,
             "results": [
-            {"currency": "<money|health|relations|satisfaction>", "amount": <int (może być ujemny)>},
+            {"currency": "<money|health|relations|satisfaction|passive_income>", "amount": <int (może być ujemny)>},
             ...
             ]
-        },
         ...
         ]
     }
@@ -95,13 +94,16 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - `name`: max ~40 znaków, czytelna i krótka (np. "Kontynuuj studia", "Zmiana pracy", "Zainwestuj w niszowy kurs").
     - `price`: natychmiastowy koszt w jednostce wskazanej przez `currency`. Zawsze liczba całkowita >= 0.
     - `currency`: określa **walutę, z której zapłaci gracz natychmiast** (jedna z czterech).
+    - `is_work_related`: ustaw na `true`, jeśli opcja bezpośrednio dotyczy podjęcia nowej pracy, zmiany pracy, awansu lub założenia działalności gospodarczej (czyli sytuacji, które będą wymagały ustalenia szczegółów umowy i składek ZUS). W przeciwnym razie ustaw na `false` (np. dla edukacji, inwestycji, hobby). Jeśli opcja dotyczy podjęcia nowej pracy, ustaw `job_name` na nazwę nowej pracy.
     - `results`: lista skutków w postaci zmian walut (mogą być dodatnie lub ujemne). Każdy obiekt ma `currency` i `amount` (int). `amount` odzwierciedla efekt po pięciu latach (sumaryczna zmiana w danej walucie).
     - Dopuszczalna długość listy `results`: 1–3 wpisów (najczęściej 1–2). MAX 3 POWINNO BYC RZADKO AZ TYLE
     5. Nie dodawaj żadnych dodatkowych kluczy (np. "explanation", "probability", "meta") — tylko powyższe pola.
     6. Wszystkie wartości muszą być spójne semantycznie z przekazanym stanem gry.
 
+    W pewnym momencie mozesz zaproponowac opcje zeby wziac ślub - tylko jeśli user ma married=false
+
     Reguły tworzenia sensownych i edukacyjnych opcji (heurystyki):
-    1. Bierz pod uwagę wszystkie pola `game_interface`: age, money, health (0-200), relations, satisfaction, passive_income, job, education. Generuj opcje adekwatne do wieku (np. osoby 18–30: studia, start kariery, ryzyko zadłużenia; 45–60: zmiana pracy, ubezpieczenia, inwestycje; >=65: jeśli bywa wywoływane, zwróć pustą listę).
+    1. Bierz pod uwagę wszystkie pola `game_interface`: age, money, health (0-100), relations, satisfaction, passive_income, job, education, married. Generuj opcje adekwatne do wieku (np. osoby 18–30: studia, start kariery, ryzyko zadłużenia; 45–60: zmiana pracy, ubezpieczenia, inwestycje; >=65: jeśli bywa wywoływane, zwróć pustą listę).
     2. Zadbaj o realność wpływów:
     - Opcje edukacyjne: zwykle niska natychmiastowa `price` (opłata kursu) i spadek `money`, wzrost `satisfaction`/`relations` drobny, długoterminowy wzrost `money` i `passive_income` w `results`.
     - Opcje zawodowe: "zmiana pracy" może mieć neutralny/ujemny `price` (koszty przejścia) i znaczący wzrost `money` / `satisfaction` lub ryzyko spadku `relations`.
@@ -113,7 +115,10 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - Średnie: 2000–20000
     - Duże: powyżej 20000
     (Dostosuj do stanu game_state: jeśli gracz ma 500 zł, nie proponuj kosztu 1 000 000.)
-    4. Zachowaj ograniczenia `health` w logice: `health` nie powinno wyjść poza 0–200. Jeżeli wynik sugeruje spadek poniżej 0 lub wzrost powyżej 200, dopasuj go (model może zwrócić wartości, a serwer/validator powinien je obciąć — nadal jednak staraj się generować realistyczne wartości mieszczące się w zakresie).
+    Ceny powinny miec sensowny zakres w ramach roku czyli np. praca na etacie nie powinna miec zarobków w wysokosci 2000 - tylko jesli minimalna placa w polsce to okolo 5000 miesiecznie to wartosc minimalna to powinno byc w okolicach minimum 60000,
+    tak samo relatywnie wszystkie inne rzeczy powinny byc w tych samych rzedach wielkosci. 
+    Rzecz która ma cenę wiekszą od 0 nie powinna później powodowac rowniez spadku pieniedzy w results.
+    4. Zachowaj ograniczenia `health` w logice: `health` nie powinno wyjść poza 0-100. Jeżeli wynik sugeruje spadek poniżej 0 lub wzrost powyżej 100, dopasuj go (model może zwrócić wartości, a serwer/validator powinien je obciąć — nadal jednak staraj się generować realistyczne wartości mieszczące się w zakresie).
     5. Balans: zaproponuj opcje o różnych profilach ryzyka — bezpieczna, zrównoważona, ryzykowna — ale zawsze zgodne z wiekiem i zasobami gracza.
     6. Jeśli `money` jest bardzo niskie (<500) generuj przynajmniej jedną opcję o zerowym koszcie (np. "Poszukiwanie pracy dorywczej") aby nie zablokować rozgrywki.
 
@@ -134,6 +139,7 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
         "name":"Kontynuuj studia (magister)",
         "price":5000,
         "currency":"money",
+        "is_work_related": false,
         "results":[
             {"currency":"money","amount":15000},
             {"currency":"passive_income","amount":200}
@@ -143,6 +149,8 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
         "name":"Praca dorywcza + kurs IT",
         "price":0,
         "currency":"money",
+        "is_work_related": true,
+        "job_name": "Magazynier",
         "results":[
             {"currency":"money","amount":6000},
             {"currency":"health","amount":-5},
@@ -152,6 +160,8 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     ]
     }
 
+    Niech twoje propozycje options mają sens - jeśli gracz ma tytuł inyniera to nie proponuj mu robienia licencjatu bo na chuj???
+
     Dodatkowe wskazówki implementacyjne:
     - Staraj się tworzyć nazwy opcji zróżnicowane stylistycznie i krótkie.
     - Uwzględniaj `history` (jeśli dostępne) aby unikać powtarzania identycznych opcji co 5 lat (preferuj ewolucję ścieżki).
@@ -160,6 +170,8 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
     - W przypadku niskiego `relations` lub `satisfaction` generuj conajmniej jedną opcję nastawioną na poprawę tych walorów.
 
     Podsumowanie: bądź roztropnym, realistycznym, wyważonym Mistrzem Gry. Zwracaj wyłącznie poprawny JSON odpowiadający podanemu schematowi i regułom. Żadnego dodatkowego tekstu.
+
+    Aha nie pierdol ze kurs zawodowy daje 80k rocznie, jak mi taki znajdziesz to juz zaraz na niego wypierdalam
     """
     print(request.history != [], request.history == [])
 

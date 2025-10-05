@@ -12,6 +12,7 @@ class Currency(str, Enum):
     RELATIONS = "relations"
     SATISFACTION = "satisfaction"
     PASSIVE_INCOME = "passive_income"
+    EDUCATION = "education"
 
 class CurrencyChange(BaseModel):
     currency: Currency
@@ -19,10 +20,11 @@ class CurrencyChange(BaseModel):
 
 class GameInterface(BaseModel):
     money: int
-    health: int  # 0–200
+    health: int  # 0–100
     relations: int
     satisfaction: int
     passive_income: int
+    married: bool
 
     age: Optional[int] = None
     job: Optional[str] = None
@@ -33,6 +35,8 @@ class GameOption(BaseModel):
     price: int
     currency: Currency
     results: list[CurrencyChange]
+    is_work_related: bool
+    job_name: Optional[str]
 
 class GameHistory(BaseModel):
     options: list[GameOption]
