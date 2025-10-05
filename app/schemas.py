@@ -37,6 +37,7 @@ class GameOption(BaseModel):
     results: list[CurrencyChange]
     is_work_related: bool
     job_name: Optional[str] = None
+    degree: Optional[str] = None
 
 class GameHistory(BaseModel):
     options: list[GameOption]

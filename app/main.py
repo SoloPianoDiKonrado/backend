@@ -104,7 +104,7 @@ Wymagania strukturalne:
 - is_work_related: true = nowa praca/awans/firma; false = edukacja/hobby/inwestycje
 - job_name: wymagane gdy is_work_related=true
 - results: 1-3 efekty (rzadko 3!), amount może być ujemny
-
+- degree: stopien naukowy - w przypadku jesli akcja jest studiami np. name: Studia magisterskie - degree: magister 
 ---
 
 ## MECHANIZM ANTY-POWTÓRZEŃ (KLUCZOWE!)
