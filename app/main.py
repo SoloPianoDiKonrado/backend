@@ -394,7 +394,6 @@ Sytuacja: Wiek 28, money=45000, Mid Developer, education="Inżynier IT", married
 
 OSTATNIE PRZYPOMNIENIE: Nie generuj tego samego contentu 2 razy z rzędu. Każde wywołanie = świeże, kontekstowe, zróżnicowane opcje. SZYBKO I NA TEMAT.
 """
-    print(request.history != [], request.history == [])
 
     user_prompt = f"""
     To moj stan gry:
@@ -407,7 +406,7 @@ OSTATNIE PRZYPOMNIENIE: Nie generuj tego samego contentu 2 razy z rzędu. Każde
     chat = GeminiChat()
 
     response_text = chat.message(user_prompt, system_prompt)
-    print(response_text[7:-3])
+
     a=json.loads(response_text[7:-3])
     return a
 
