@@ -1,13 +1,45 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 from enum import Enum
-from app.main import GameInterface
-
 
 class EventType(str, Enum):
     POSITIVE = "positive"
     NEGATIVE = "negative"
 
+class Currency(str, Enum):
+    MONEY = "money"
+    HEALTH = "health"
+    RELATIONS = "relations"
+    SATISFACTION = "satisfaction"
+    PASSIVE_INCOME = "passive_income"
+    EDUCATION = "education"
+
+class CurrencyChange(BaseModel):
+    currency: Currency
+    amount: int
+
+class GameInterface(BaseModel):
+    money: int
+    health: int  # 0–100
+    relations: int
+    satisfaction: int
+    passive_income: int
+    married: bool
+
+    age: Optional[int] = None
+    job: Optional[str] = None
+    education: Optional[str] = None
+
+class GameOption(BaseModel):
+    name: str  # short name
+    price: int
+    currency: Currency
+    results: list[CurrencyChange]
+    is_work_related: bool
+    job_name: Optional[str]
+
+class GameHistory(BaseModel):
+    options: list[GameOption]
 
 class EventCondition(BaseModel):
     max: Optional[int] = None
@@ -20,7 +52,6 @@ class EventEffects(BaseModel):
     relations: int
     satisfaction: int
     passive_income: int
-
 
 class GameEvent(BaseModel):
     name: str
@@ -46,3 +77,19 @@ class EventResponse(BaseModel):
 class AIEventRequest(BaseModel):
     game_state: GameInterface
     events_data: List[Dict[str, Any]]
+
+class GameSummaryRequest(BaseModel):
+    history: GameHistory
+    game_state: GameInterface
+
+class GameSummaryResponse(BaseModel):
+    summary: str
+
+
+class GenerateYearResponse(BaseModel):
+    options: list[GameOption]
+
+class GenerateYearRequest(BaseModel):
+    game_interface: GameInterface
+    options_amount: int
+    history: list[GameHistory]

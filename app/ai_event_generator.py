@@ -128,3 +128,4 @@ class AIEventGenerator:
     def close(self):
         """Zamyka sesję AI"""
         self.gemini.clear_chat()
+
