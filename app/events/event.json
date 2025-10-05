@@ -168,7 +168,7 @@
 		"type": "positive",
 		"description": "Rodzi się dziecko – więcej obowiązków, ale też szczęścia.",
 		"conditions": {
-			"relations": { "min": 30 }
+			"relations": { "married": true }
 		},
 		"effects": {
 			"money": -1000,
