@@ -171,7 +171,9 @@ def generate_year(request: GenerateYearRequest) -> GenerateYearResponse:
 
     Podsumowanie: bądź roztropnym, realistycznym, wyważonym Mistrzem Gry. Zwracaj wyłącznie poprawny JSON odpowiadający podanemu schematowi i regułom. Żadnego dodatkowego tekstu.
 
-    Aha nie pierdol ze kurs zawodowy daje 80k rocznie, jak mi taki znajdziesz to juz zaraz na niego wypierdalam
+    Aha nie pierdol ze kurs zawodowy daje 80k rocznie, jak mi taki znajdziesz to juz zaraz na niego wypierdalam.
+
+    Staraj sie nie pierdolic kocopołów i nie dawaj takich samych opcji ciągle bo troche to potestowalem no i srednio na jeza to wyglada jak moge w ciagu 4 lat awansowac z kursu na programiste do wlasciciela firmy i zaczac kupowac mieszkania w wieku 22 lat - tak samo nie powinno byc opcji na to zebym mogl zakladac firme co roku i trzepac z tego mamone 
     """
     print(request.history != [], request.history == [])
 
